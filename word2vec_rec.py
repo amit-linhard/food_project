@@ -1,12 +1,7 @@
-import os
-import sys
-import logging
 import unidecode
 import ast
-
 import numpy as np
 import pandas as pd
-
 from gensim.models import Word2Vec
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
@@ -32,11 +27,11 @@ def get_recommendations(N, scores):
     Top-N recomendations order by score
     """
     # load in recipe dataset
-    df_recipes = pd.read_csv(config.PARSED_PATH)
+    df_recipes = pd.read_csv(config.PARSED_AUG_PATH)
     # order the scores with and filter to get the highest N scores
     top = sorted(range(len(scores)), key=lambda i: scores[i], reverse=True)[:N]
     # create dataframe to load in recommendations
-    recommendation = pd.DataFrame(columns=["recipe", "ingredients", "score", "url"])
+    recommendation = pd.DataFrame(columns=["recipe", "ingredients", "score", "url", "cooking_time", "difficulty", "general rating", "liked?"])
     count = 0
     for i in top:
         recommendation.at[count, "recipe"] = title_parser(df_recipes["recipe_name"][i])
@@ -45,6 +40,10 @@ def get_recommendations(N, scores):
         )
         recommendation.at[count, "url"] = df_recipes["recipe_urls"][i]
         recommendation.at[count, "score"] = f"{scores[i]}"
+        recommendation.at[count, "cooking_time"] = df_recipes["cooking_time"][i]
+        recommendation.at[count, "difficulty"] = df_recipes["difficulty"][i]
+        recommendation.at[count, "general rating"] = df_recipes["general_rating"][i]
+        recommendation.at[count, "liked"] = df_recipes["like"][i]
         count += 1
     return recommendation
 
@@ -194,10 +193,10 @@ def get_recs(ingredients, N=5, mean=False):
     if model:
         print("Successfully loaded model")
     # load in data
-    data = pd.read_csv("input/df_parsed.csv")
+    data = pd.read_csv("input/df_parsed_augmented.csv")
     # parse ingredients
     data["parsed"] = data.ingredients.apply(ingredient_parser)
-    # create corpus
+    # create corpus, sort ingredients of each recipe alphabetically
     corpus = get_and_sort_corpus(data)
 
     if mean:
@@ -214,7 +213,7 @@ def get_recs(ingredients, N=5, mean=False):
         doc_vec = [doc.reshape(1, -1) for doc in doc_vec]
         assert len(doc_vec) == len(corpus)
 
-    # create embessing for input text
+    # create embeddings for input text
     input = ingredients
     # create tokens with elements
     input = input.split(",")
