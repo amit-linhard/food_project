@@ -1,25 +1,10 @@
-# /Users/Jack/Documents/Projects/Whatscooking-/src
-
 import pandas as pd
-import nltk
 import string
 import ast
 import re
 import unidecode
-
-# nltk.download('wordnet')
 from nltk.stem import WordNetLemmatizer
-from nltk.corpus import wordnet
-from collections import Counter
 import config
-
-# Weigths and measures are words that will not add value to the model. I got these standard words from
-# https://en.wikibooks.org/wiki/Cookbook:Units_of_measurement
-
-# # We lemmatize the words to reduce them to their smallest form (lemmas).
-# lemmatizer = WordNetLemmatizer()
-# measures = [lemmatizer.lemmatize(m) for m in measures]
-# words_to_remove = [lemmatizer.lemmatize(m) for m in words_to_remove]
 
 
 def ingredient_parser(ingreds):
@@ -468,17 +453,3 @@ if __name__ == "__main__":
     m = df.recipe_name.str.endswith("Recipe - Allrecipes.com")
     df["recipe_name"].loc[m] = df.recipe_name.loc[m].str[:-23]
     df.to_csv(config.PARSED_PATH, index=False)
-
-    # vocabulary = nltk.FreqDist()
-    # for ingredients in recipe_df['ingredients']:
-    #     ingredients = ingredients.split()
-    #     vocabulary.update(ingredients)
-
-    # for word, frequency in vocabulary.most_common(200):
-    #     print(f'{word};{frequency}')
-    # fdist = nltk.FreqDist(ingredients)
-
-    # common_words = []
-    # for word, _ in vocabulary.most_common(250):
-    #     common_words.append(word)
-    # print(common_words)
