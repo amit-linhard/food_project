@@ -1,4 +1,5 @@
 import streamlit as st
+import nltk
 import pandas as pd
 import base64
 from urllib.parse import urlparse
@@ -31,6 +32,7 @@ def add_logo(logo_path, width, height):
 
 
 def main():
+    nltk.download('wordnet')
     cs_sidebar()
     cs_body()
 
